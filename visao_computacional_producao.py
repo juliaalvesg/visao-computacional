@@ -57,14 +57,19 @@ while True:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.circle(frame, center, 4, (0, 0, 255), -1)
 
-    # Contagem
-    for (x, y) in detections:
-        if (line_position - offset) < y < (line_position + offset):
+ import time
+
+ultima_contagem = 0
+
+for (x, y) in detections:
+    if (line_position - offset) < y < (line_position + offset):
+        if time.time() - ultima_contagem > 1:  # mínimo 1 segundo entre contagens
             object_count += 1
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             print(f"Objeto #{object_count} detectado às {timestamp}")
             dados_registrados.append({"Objeto": object_count, "Timestamp": timestamp})
-            detections.remove((x, y))
+            ultima_contagem = time.time()
+        detections.remove((x, y))
 
     # Exibição (opcional)
     cv2.putText(frame, f"Contagem: {object_count}", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
